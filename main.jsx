@@ -1,14 +1,16 @@
+import React, { useEffect, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { TDSMobileAITProvider } from "@toss/tds-mobile-ait";
+import { Button, List, ListHeader, ListRow, TextField } from "@toss/tds-mobile";
+
 const STORAGE_KEY = "family-dday-storage";
 
 const FEATURES = [
   {
     id: "age",
     label: "나이 계산",
-    icon: "만",
     description: "생년월일을 기준으로 만나이와 한국식 나이를 함께 확인합니다.",
-    fields: [
-      { name: "birthDate", label: "생년월일", type: "date", saveKey: "myBirthDate" },
-    ],
+    fields: [{ name: "birthDate", label: "생년월일", type: "date", saveKey: "myBirthDate" }],
     calculate: ({ birthDate }, today) => {
       if (!birthDate) {
         return emptyResult();
@@ -27,17 +29,13 @@ const FEATURES = [
       return {
         primary: `만 ${internationalAge}세`,
         secondary: `한국식 나이 ${koreanAge}세`,
-        meta: [
-          `다음 생일까지 ${formatDDay(daysUntilBirthday)}`,
-          `출생일 ${formatDateKorean(birth)}`,
-        ],
+        meta: [`다음 생일까지 ${formatDDay(daysUntilBirthday)}`, `출생일 ${formatDateKorean(birth)}`],
       };
     },
   },
   {
     id: "birthday",
     label: "생일 디데이",
-    icon: "생",
     description: "다음 생일까지 남은 날짜를 D-Day 형식으로 계산합니다.",
     fields: [
       { name: "birthday", label: "생년월일", type: "date", saveKey: "partnerBirthday" },
@@ -61,20 +59,15 @@ const FEATURES = [
       return {
         primary: `${label} ${formatDDay(days)}`,
         secondary: `${formatDateKorean(nextBirthday)} · 만 ${turningAge}세 되는 날`,
-        meta: [
-          `출생일 ${formatDateKorean(birth)}`,
-        ],
+        meta: [`출생일 ${formatDateKorean(birth)}`],
       };
     },
   },
   {
     id: "anniversary",
     label: "결혼 기념일",
-    icon: "결",
     description: "다음 결혼기념일까지 남은 날짜와 다가오는 주년을 알려줍니다.",
-    fields: [
-      { name: "anniversary", label: "결혼기념일", type: "date", saveKey: "anniversary" },
-    ],
+    fields: [{ name: "anniversary", label: "결혼기념일", type: "date", saveKey: "anniversary" }],
     calculate: ({ anniversary }, today) => {
       if (!anniversary) {
         return emptyResult();
@@ -92,28 +85,25 @@ const FEATURES = [
       return {
         primary: `결혼 ${upcomingYears}주년 ${formatDDay(days)}`,
         secondary: formatDateKorean(nextAnniversary),
-        meta: [
-          `함께한 기간 ${formatElapsed(date, today)}`,
-        ],
+        meta: [`함께한 기간 ${formatElapsed(date, today)}`],
       };
     },
   },
   {
     id: "milestone",
     label: "주요 기념일",
-    icon: "기",
     description: "대표 기념일을 선택하면 다음 기념일까지 남은 기간을 보여줍니다.",
     fields: [
       {
         name: "milestone",
         label: "기념일",
-        type: "select",
+        type: "option",
         options: [
-          { value: "valentine", label: "발렌타인데이 · 2월 14일" },
-          { value: "white", label: "화이트데이 · 3월 14일" },
-          { value: "parents", label: "어버이날 · 5월 8일" },
-          { value: "pepero", label: "빼빼로데이 · 11월 11일" },
-          { value: "christmas", label: "크리스마스 · 12월 25일" },
+          { value: "valentine", label: "발렌타인데이", sublabel: "2월 14일" },
+          { value: "white", label: "화이트데이", sublabel: "3월 14일" },
+          { value: "parents", label: "어버이날", sublabel: "5월 8일" },
+          { value: "pepero", label: "빼빼로데이", sublabel: "11월 11일" },
+          { value: "christmas", label: "크리스마스", sublabel: "12월 25일" },
         ],
         saveKey: "milestone",
       },
@@ -134,20 +124,15 @@ const FEATURES = [
       return {
         primary: `${config.label} ${formatDDay(days)}`,
         secondary: formatDateKorean(nextDate),
-        meta: [
-          `매년 ${config.month}월 ${config.day}일`,
-        ],
+        meta: [`매년 ${config.month}월 ${config.day}일`],
       };
     },
   },
   {
     id: "childMonths",
     label: "아이 개월수",
-    icon: "아",
     description: "아이 생년월일을 기준으로 현재 개월수와 연/월 단위를 함께 계산합니다.",
-    fields: [
-      { name: "childBirthDate", label: "아이 생년월일", type: "date", saveKey: "childBirthDate" },
-    ],
+    fields: [{ name: "childBirthDate", label: "아이 생년월일", type: "date", saveKey: "childBirthDate" }],
     calculate: ({ childBirthDate }, today) => {
       if (!childBirthDate) {
         return emptyResult();
@@ -165,21 +150,15 @@ const FEATURES = [
       return {
         primary: `현재 ${totalMonths}개월`,
         secondary: years > 0 ? `${years}년 ${months}개월` : `${months}개월`,
-        meta: [
-          `출생일 ${formatDateKorean(birth)}`,
-          `태어난 지 ${daysBetween(birth, today)}일`,
-        ],
+        meta: [`출생일 ${formatDateKorean(birth)}`, `태어난 지 ${daysBetween(birth, today)}일`],
       };
     },
   },
   {
     id: "pregnancy",
     label: "임신 주수",
-    icon: "주",
     description: "출산 예정일을 입력하면 현재 임신 주수와 남은 기간을 계산합니다.",
-    fields: [
-      { name: "dueDate", label: "출산 예정일", type: "date", saveKey: "dueDate" },
-    ],
+    fields: [{ name: "dueDate", label: "출산 예정일", type: "date", saveKey: "dueDate" }],
     calculate: ({ dueDate }, today) => {
       if (!dueDate) {
         return emptyResult();
@@ -198,9 +177,7 @@ const FEATURES = [
         return {
           primary: "임신 전 기간입니다",
           secondary: `기준 시작일 ${formatDateKorean(start)}`,
-          meta: [
-            `출산 예정일까지 ${remainingDays}일`,
-          ],
+          meta: [`출산 예정일까지 ${remainingDays}일`],
         };
       }
 
@@ -210,10 +187,7 @@ const FEATURES = [
       return {
         primary: `현재 ${weeks}주 ${extraDays}일차`,
         secondary: remainingDays >= 0 ? `출산까지 ${remainingDays}일 남음` : `${Math.abs(remainingDays)}일 지남`,
-        meta: [
-          `출산 예정일 ${formatDateKorean(due)}`,
-          `임신 시작 기준일 ${formatDateKorean(start)}`,
-        ],
+        meta: [`출산 예정일 ${formatDateKorean(due)}`, `임신 시작 기준일 ${formatDateKorean(start)}`],
       };
     },
   },
@@ -227,151 +201,36 @@ const MILESTONES = {
   christmas: { label: "크리스마스", month: 12, day: 25 },
 };
 
-const featureGrid = document.querySelector("#featureGrid");
-const calculatorForm = document.querySelector("#calculatorForm");
-const resultPrimary = document.querySelector("#resultPrimary");
-const resultSecondary = document.querySelector("#resultSecondary");
-const resultMeta = document.querySelector("#resultMeta");
-const featureTitle = document.querySelector('[data-role="feature-title"]');
-const featureDescription = document.querySelector('[data-role="feature-description"]');
-const savedList = document.querySelector("#savedList");
+function App() {
+  const [activeFeatureId, setActiveFeatureId] = useState(FEATURES[0].id);
+  const [storage, setStorage] = useState(() => loadStorage());
 
-let activeFeatureId = FEATURES[0].id;
-let storage = loadStorage();
+  const activeFeature = FEATURES.find((feature) => feature.id === activeFeatureId) ?? FEATURES[0];
+  const values = buildFeatureValues(activeFeature, storage);
+  const result = activeFeature.calculate(values, startOfDay(new Date()));
 
-renderFeatureTabs();
-renderActiveFeature();
-renderSavedList();
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+  }, [storage]);
 
-function renderFeatureTabs() {
-  featureGrid.innerHTML = "";
+  function updateField(saveKey, nextValue) {
+    setStorage((prev) => ({
+      ...prev,
+      [saveKey]: nextValue,
+    }));
+  }
 
-  for (const feature of FEATURES) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = `feature-card${feature.id === activeFeatureId ? " is-active" : ""}`;
-    button.setAttribute("role", "tab");
-    button.setAttribute("aria-selected", String(feature.id === activeFeatureId));
-    button.dataset.featureId = feature.id;
-    button.innerHTML = `
-      <span class="feature-icon">${feature.icon}</span>
-      <span class="feature-text">
-        <strong>${feature.label}</strong>
-        <span>${feature.description}</span>
-      </span>
-    `;
-    button.addEventListener("click", () => {
-      activeFeatureId = feature.id;
-      renderFeatureTabs();
-      renderActiveFeature();
+  function clearActiveFeature() {
+    setStorage((prev) => {
+      const next = { ...prev };
+      for (const field of activeFeature.fields) {
+        next[field.saveKey] = "";
+      }
+      return next;
     });
-    featureGrid.appendChild(button);
-  }
-}
-
-function renderActiveFeature() {
-  const feature = FEATURES.find((item) => item.id === activeFeatureId);
-  if (!feature) {
-    return;
   }
 
-  featureTitle.textContent = feature.label;
-  featureDescription.textContent = feature.description;
-  calculatorForm.innerHTML = "";
-
-  for (const field of feature.fields) {
-    const wrapper = document.createElement("label");
-    wrapper.className = "field";
-
-    const label = document.createElement("span");
-    label.className = "field-label";
-    label.textContent = field.label;
-    wrapper.appendChild(label);
-
-    let input;
-    const savedValue = storage[field.saveKey] || "";
-
-    if (field.type === "select") {
-      input = document.createElement("select");
-      const placeholder = document.createElement("option");
-      placeholder.value = "";
-      placeholder.textContent = "선택해 주세요";
-      input.appendChild(placeholder);
-
-      for (const option of field.options) {
-        const optionElement = document.createElement("option");
-        optionElement.value = option.value;
-        optionElement.textContent = option.label;
-        input.appendChild(optionElement);
-      }
-    } else {
-      input = document.createElement("input");
-      input.type = field.type;
-      if (field.placeholder) {
-        input.placeholder = field.placeholder;
-      }
-    }
-
-    input.name = field.name;
-    input.value = savedValue;
-    input.addEventListener("input", handleFormChange);
-    input.addEventListener("change", handleFormChange);
-    wrapper.appendChild(input);
-    calculatorForm.appendChild(wrapper);
-  }
-
-  const helper = document.createElement("p");
-  helper.className = "form-helper";
-  helper.textContent = "입력값은 이 기기의 브라우저에 저장됩니다.";
-  calculatorForm.appendChild(helper);
-
-  updateResult();
-}
-
-function handleFormChange() {
-  persistActiveForm();
-  updateResult();
-  renderSavedList();
-}
-
-function persistActiveForm() {
-  const feature = FEATURES.find((item) => item.id === activeFeatureId);
-  if (!feature) {
-    return;
-  }
-
-  const formData = new FormData(calculatorForm);
-  for (const field of feature.fields) {
-    storage[field.saveKey] = String(formData.get(field.name) || "");
-  }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
-}
-
-function updateResult() {
-  const feature = FEATURES.find((item) => item.id === activeFeatureId);
-  if (!feature) {
-    return;
-  }
-
-  const formData = new FormData(calculatorForm);
-  const values = Object.fromEntries(formData.entries());
-  const today = startOfDay(new Date());
-  const result = feature.calculate(values, today);
-
-  resultPrimary.textContent = result.primary;
-  resultSecondary.textContent = result.secondary || "";
-  resultMeta.innerHTML = "";
-
-  for (const line of result.meta || []) {
-    const tag = document.createElement("span");
-    tag.className = "meta-chip";
-    tag.textContent = line;
-    resultMeta.appendChild(tag);
-  }
-}
-
-function renderSavedList() {
-  const entries = [
+  const savedEntries = [
     { label: "내 생년월일", value: storage.myBirthDate },
     { label: "배우자 생일", value: storage.partnerBirthday },
     { label: "결혼기념일", value: storage.anniversary },
@@ -379,21 +238,144 @@ function renderSavedList() {
     { label: "출산 예정일", value: storage.dueDate },
   ].filter((item) => item.value);
 
-  if (entries.length === 0) {
-    savedList.innerHTML = `<p class="saved-empty">아직 저장된 날짜가 없습니다.</p>`;
-    return;
+  return (
+    <div className="app-shell">
+      <section className="app-hero">
+        <p className="app-eyebrow">Family D-Day</p>
+        <h1>가족 날짜를 가장 빠르게 확인하는 방법</h1>
+        <p className="app-copy">생일, 결혼기념일, 아이 개월수, 임신 주수를 한 번에 계산하는 생활형 날짜 유틸리티입니다.</p>
+      </section>
+
+      <div className="app-stack">
+        <section className="tds-section">
+          <ListHeader
+            title={<ListHeader.TitleParagraph typography="t5" fontWeight="bold">주요 기능</ListHeader.TitleParagraph>}
+            description={<ListHeader.DescriptionParagraph>필요한 계산을 선택하세요.</ListHeader.DescriptionParagraph>}
+            descriptionPosition="bottom"
+          />
+          <List rowSeparator="full">
+            {FEATURES.map((feature) => (
+              <ListRow
+                key={feature.id}
+                contents={
+                  <ListRow.Texts
+                    texts={[
+                      { text: feature.label },
+                      { text: feature.description, typography: "t7" },
+                    ]}
+                  />
+                }
+                right={<span className={feature.id === activeFeatureId ? "feature-state active" : "feature-state"}>{feature.id === activeFeatureId ? "선택됨" : ""}</span>}
+                withArrow
+                onPress={() => setActiveFeatureId(feature.id)}
+              />
+            ))}
+          </List>
+        </section>
+
+        <section className="tds-section">
+          <ListHeader
+            title={<ListHeader.TitleParagraph typography="t5" fontWeight="bold">{activeFeature.label}</ListHeader.TitleParagraph>}
+            description={<ListHeader.DescriptionParagraph>{activeFeature.description}</ListHeader.DescriptionParagraph>}
+            descriptionPosition="bottom"
+          />
+
+          <div className="form-stack">
+            {activeFeature.fields.map((field) => (
+              <FieldRenderer key={field.name} field={field} value={storage[field.saveKey] || ""} onChange={(nextValue) => updateField(field.saveKey, nextValue)} />
+            ))}
+          </div>
+
+          <div className="button-row">
+            <Button display="full" size="xlarge" variant="weak" onClick={clearActiveFeature}>
+              현재 항목 초기화
+            </Button>
+          </div>
+
+          <section className="result-card" aria-live="polite">
+            <p className="result-label">계산 결과</p>
+            <strong className="result-primary">{result.primary}</strong>
+            {result.secondary ? <p className="result-secondary">{result.secondary}</p> : null}
+            {result.meta.length > 0 ? (
+              <List rowSeparator="none">
+                {result.meta.map((line) => (
+                  <ListRow
+                    key={line}
+                    verticalPadding="small"
+                    contents={<ListRow.Texts texts={[{ text: line, typography: "t7" }]} />}
+                  />
+                ))}
+              </List>
+            ) : null}
+          </section>
+        </section>
+
+        <section className="tds-section">
+          <ListHeader
+            title={<ListHeader.TitleParagraph typography="t5" fontWeight="bold">최근 입력 정보</ListHeader.TitleParagraph>}
+            description={
+              <ListHeader.DescriptionParagraph>
+                로그인 없이 현재 기기에 저장됩니다. 브라우저 데이터를 삭제하면 함께 사라질 수 있습니다.
+              </ListHeader.DescriptionParagraph>
+            }
+            descriptionPosition="bottom"
+          />
+          {savedEntries.length > 0 ? (
+            <List rowSeparator="full">
+              {savedEntries.map((entry) => (
+                <ListRow
+                  key={entry.label}
+                  contents={<ListRow.Texts texts={[{ text: entry.label }, { text: formatDateKorean(parseLocalDate(entry.value)), typography: "t7" }]} />}
+                />
+              ))}
+            </List>
+          ) : (
+            <p className="saved-empty">아직 저장된 날짜가 없습니다.</p>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function FieldRenderer({ field, value, onChange }) {
+  if (field.type === "option") {
+    return (
+      <div className="option-stack">
+        <p className="field-title">{field.label}</p>
+        <List rowSeparator="full">
+          {field.options.map((option) => (
+            <ListRow
+              key={option.value}
+              contents={<ListRow.Texts texts={[{ text: option.label }, { text: option.sublabel, typography: "t7" }]} />}
+              right={<span className={option.value === value ? "feature-state active" : "feature-state"}>{option.value === value ? "선택됨" : ""}</span>}
+              onPress={() => onChange(option.value)}
+            />
+          ))}
+        </List>
+      </div>
+    );
   }
 
-  savedList.innerHTML = "";
-  for (const entry of entries) {
-    const card = document.createElement("div");
-    card.className = "saved-item";
-    card.innerHTML = `
-      <span>${entry.label}</span>
-      <strong>${formatDateKorean(parseLocalDate(entry.value))}</strong>
-    `;
-    savedList.appendChild(card);
+  return (
+    <TextField
+      variant="box"
+      label={field.label}
+      labelOption="sustain"
+      value={value}
+      placeholder={field.placeholder}
+      onChange={(event) => onChange(event.target.value)}
+      type={field.type}
+    />
+  );
+}
+
+function buildFeatureValues(feature, storage) {
+  const values = {};
+  for (const field of feature.fields) {
+    values[field.name] = storage[field.saveKey] || "";
   }
+  return values;
 }
 
 function loadStorage() {
@@ -490,6 +472,10 @@ function addDays(date, days) {
   return startOfDay(next);
 }
 
+function addYears(date, years) {
+  return normalizeMonthDay(date.getFullYear() + years, date.getMonth() + 1, date.getDate());
+}
+
 function formatDDay(days) {
   if (days === 0) {
     return "D-Day";
@@ -515,6 +501,10 @@ function formatElapsed(from, to) {
   return `${wholeMonthsBetween(from, to)}개월`;
 }
 
-function addYears(date, years) {
-  return normalizeMonthDay(date.getFullYear() + years, date.getMonth() + 1, date.getDate());
-}
+createRoot(document.querySelector("#root")).render(
+  <React.StrictMode>
+    <TDSMobileAITProvider>
+      <App />
+    </TDSMobileAITProvider>
+  </React.StrictMode>,
+);

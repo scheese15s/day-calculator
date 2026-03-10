@@ -4,62 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>패밀리 디데이</title>
-  <link href='/style.css' rel='stylesheet'>
+  <link href="/style.css" rel="stylesheet" />
 </head>
 <body>
-  <div class="app-shell">
-    <header class="hero">
-      <p class="eyebrow">Family D-Day</p>
-      <h1>가족 날짜를 가장 빠르게 확인하는 방법</h1>
-      <p class="hero-copy">
-        생일, 결혼기념일, 아이 개월수, 임신 주수를 한 번에 계산하는
-        생활형 날짜 유틸리티입니다.
-      </p>
-      <div class="hero-badges" aria-label="핵심 특성">
-        <span>모바일 최적화</span>
-        <span>즉시 계산</span>
-        <span>기기 저장</span>
-      </div>
-    </header>
-
-    <main class="layout">
-      <section class="card feature-panel" aria-labelledby="feature-title">
-        <div class="section-heading">
-          <p class="section-kicker">주요 기능</p>
-          <h2 id="feature-title">필요한 계산을 선택하세요</h2>
-        </div>
-        <div class="feature-grid" id="featureGrid" role="tablist" aria-label="날짜 계산 기능"></div>
-      </section>
-
-      <section class="card workspace" aria-labelledby="workspace-title">
-        <div class="section-heading">
-          <p class="section-kicker">빠른 계산</p>
-          <h2 id="workspace-title" data-role="feature-title">나이 계산</h2>
-          <p class="section-copy" data-role="feature-description"></p>
-        </div>
-
-        <form id="calculatorForm" class="calculator-form"></form>
-
-        <div class="result-panel" id="resultPanel" aria-live="polite">
-          <p class="result-label">계산 결과</p>
-          <div class="result-primary" id="resultPrimary">날짜를 입력하면 바로 계산됩니다.</div>
-          <div class="result-secondary" id="resultSecondary"></div>
-          <div class="result-meta" id="resultMeta"></div>
-        </div>
-      </section>
-
-      <section class="card saved-panel" aria-labelledby="saved-title">
-        <div class="section-heading">
-          <p class="section-kicker">브라우저 저장</p>
-          <h2 id="saved-title">최근 입력 정보</h2>
-          <p class="section-copy">
-            로그인 없이 현재 기기에 저장됩니다. 브라우저 데이터를 삭제하면 함께 사라질 수 있습니다.
-          </p>
-        </div>
-        <div class="saved-list" id="savedList"></div>
-      </section>
-    </main>
-  </div>
-  <script defer type="text/javascript" src="/main.js"></script>
+  <div id="root"></div>
+  <script type="module" src="/main.jsx"></script>
 </body>
 </html>
