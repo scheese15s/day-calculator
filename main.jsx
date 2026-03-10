@@ -285,7 +285,7 @@ function App() {
             description={<ListHeader.DescriptionParagraph>필요한 계산을 선택하세요.</ListHeader.DescriptionParagraph>}
             descriptionPosition="bottom"
           />
-          <List rowSeparator="full">
+          <List>
             {FEATURES.map((feature) => (
               <ListRow
                 key={feature.id}
@@ -299,7 +299,7 @@ function App() {
                 }
                 right={<span className={feature.id === activeFeatureId ? "feature-state active" : "feature-state"}>{feature.id === activeFeatureId ? "선택됨" : ""}</span>}
                 withArrow
-                onPress={() => setActiveFeatureId(feature.id)}
+                onClick={() => setActiveFeatureId(feature.id)}
               />
             ))}
           </List>
@@ -329,7 +329,7 @@ function App() {
             <strong className="result-primary">{result.primary}</strong>
             {result.secondary ? <p className="result-secondary">{result.secondary}</p> : null}
             {result.meta.length > 0 ? (
-              <List rowSeparator="none">
+              <List>
                 {result.meta.map((line) => (
                   <ListRow
                     key={line}
@@ -353,7 +353,7 @@ function App() {
             descriptionPosition="bottom"
           />
           {savedEntries.length > 0 ? (
-            <List rowSeparator="full">
+            <List>
               {savedEntries.map((entry) => (
                 <ListRow
                   key={entry.label}
@@ -375,13 +375,13 @@ function FieldRenderer({ field, value, onChange }) {
     return (
       <div className="option-stack">
         <p className="field-title">{field.label}</p>
-        <List rowSeparator="full">
+        <List>
           {field.options.map((option) => (
             <ListRow
               key={option.value}
               contents={<ListRow.Texts texts={[{ text: option.label }, { text: option.sublabel, typography: "t7" }]} />}
               right={<span className={option.value === value ? "feature-state active" : "feature-state"}>{option.value === value ? "선택됨" : ""}</span>}
-              onPress={() => onChange(option.value)}
+              onClick={() => onChange(option.value)}
             />
           ))}
         </List>
