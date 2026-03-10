@@ -1,4 +1,19 @@
+import os from "node:os";
 import { defineConfig } from "@apps-in-toss/web-framework/config";
+
+function getLanHost() {
+  const interfaces = os.networkInterfaces();
+
+  for (const entries of Object.values(interfaces)) {
+    for (const entry of entries ?? []) {
+      if (entry.family === "IPv4" && !entry.internal) {
+        return entry.address;
+      }
+    }
+  }
+
+  return "localhost";
+}
 
 export default defineConfig({
   appName: "day-calculator",
@@ -8,7 +23,7 @@ export default defineConfig({
     icon: "",
   },
   web: {
-    host: "175.196.113.233",
+    host: getLanHost(),
     port: 5173,
     commands: {
       dev: "vite --host",
