@@ -201,6 +201,29 @@ const MILESTONES = {
   christmas: { label: "크리스마스", month: 12, day: 25 },
 };
 
+class SafeAITProvider extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error) {
+    console.error("TDSMobileAITProvider failed, falling back to plain render.", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.children;
+    }
+
+    return <TDSMobileAITProvider>{this.props.children}</TDSMobileAITProvider>;
+  }
+}
+
 function App() {
   const [activeFeatureId, setActiveFeatureId] = useState(FEATURES[0].id);
   const [storage, setStorage] = useState(() => loadStorage());
@@ -503,8 +526,8 @@ function formatElapsed(from, to) {
 
 createRoot(document.querySelector("#root")).render(
   <React.StrictMode>
-    <TDSMobileAITProvider>
+    <SafeAITProvider>
       <App />
-    </TDSMobileAITProvider>
+    </SafeAITProvider>
   </React.StrictMode>,
 );
