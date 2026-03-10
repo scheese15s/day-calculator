@@ -8,7 +8,7 @@ export default defineConfig({
     icon: "",
   },
   web: {
-    host: "localhost",
+    host: "175.196.113.233",
     port: 5173,
     commands: {
       dev: "vite --host",
