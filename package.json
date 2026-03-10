@@ -1,0 +1,19 @@
+{
+  "name": "day-calculator",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "ait:dev": "granite dev",
+    "ait:build": "granite build"
+  },
+  "dependencies": {
+    "@apps-in-toss/web-framework": "^1.0.0",
+    "@toss/tds-mobile": "^1.0.0"
+  },
+  "devDependencies": {
+    "vite": "^7.1.0"
+  }
+}
