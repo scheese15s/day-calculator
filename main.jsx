@@ -224,6 +224,15 @@ class SafeAITProvider extends React.Component {
   }
 }
 
+function shouldUseAITProvider() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  // Apps in Toss runs inside a native WebView. Plain desktop/mobile browsers do not.
+  return typeof window.ReactNativeWebView?.postMessage === "function";
+}
+
 function App() {
   const [activeFeatureId, setActiveFeatureId] = useState(FEATURES[0].id);
   const [storage, setStorage] = useState(() => loadStorage());
@@ -524,10 +533,12 @@ function formatElapsed(from, to) {
   return `${wholeMonthsBetween(from, to)}개월`;
 }
 
+const RootWrapper = shouldUseAITProvider() ? SafeAITProvider : React.Fragment;
+
 createRoot(document.querySelector("#root")).render(
   <React.StrictMode>
-    <SafeAITProvider>
+    <RootWrapper>
       <App />
-    </SafeAITProvider>
+    </RootWrapper>
   </React.StrictMode>,
 );
