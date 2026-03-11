@@ -242,7 +242,15 @@ function App() {
   const result = activeFeature.calculate(values, startOfDay(new Date()));
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+    } catch (error) {
+      console.error("Failed to persist family date storage.", error);
+    }
   }, [storage]);
 
   function updateField(saveKey, nextValue) {
@@ -411,8 +419,12 @@ function buildFeatureValues(feature, storage) {
 }
 
 function loadStorage() {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    return JSON.parse(window.localStorage.getItem(STORAGE_KEY)) || {};
   } catch {
     return {};
   }
@@ -443,7 +455,18 @@ function parseLocalDate(value) {
   if (!year || !month || !day) {
     return null;
   }
-  return new Date(year, month - 1, day);
+
+  const date = new Date(year, month - 1, day);
+  if (
+    Number.isNaN(date.getTime()) ||
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return null;
+  }
+
+  return date;
 }
 
 function startOfDay(date) {
