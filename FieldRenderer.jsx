@@ -1,33 +1,38 @@
-import { List, ListRow, TextField } from "@toss/tds-mobile";
-
 export function FieldRenderer({ field, value, onChange }) {
   if (field.type === "option") {
     return (
       <div className="option-stack">
-        <p className="field-title">{field.label}</p>
-        <List>
+        <label className="field-title" htmlFor={field.name}>
+          {field.label}
+        </label>
+        <select
+          id={field.name}
+          className="native-field"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+        >
+          <option value="">선택해 주세요</option>
           {field.options.map((option) => (
-            <ListRow
-              key={option.value}
-              contents={<ListRow.Texts texts={[{ text: option.label }, { text: option.sublabel, typography: "t7" }]} />}
-              right={<span className={option.value === value ? "feature-state active" : "feature-state"}>{option.value === value ? "선택됨" : ""}</span>}
-              onClick={() => onChange(option.value)}
-            />
+            <option key={option.value} value={option.value}>
+              {option.label} {option.sublabel ? `(${option.sublabel})` : ""}
+            </option>
           ))}
-        </List>
+        </select>
       </div>
     );
   }
 
   return (
-    <TextField
-      variant="box"
-      label={field.label}
-      labelOption="sustain"
-      value={value}
-      placeholder={field.placeholder}
-      onChange={(event) => onChange(event.target.value)}
-      type={field.type}
-    />
+    <label className="field-stack" htmlFor={field.name}>
+      <span className="field-title">{field.label}</span>
+      <input
+        id={field.name}
+        className="native-field"
+        value={value}
+        placeholder={field.placeholder}
+        onChange={(event) => onChange(event.target.value)}
+        type={field.type}
+      />
+    </label>
   );
 }

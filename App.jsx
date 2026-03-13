@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, List, ListHeader, ListRow } from "@toss/tds-mobile";
+import { Button } from "@toss/tds-mobile";
 import { TDSMobileAITProvider } from "@toss/tds-mobile-ait";
 import { FieldRenderer } from "./FieldRenderer.jsx";
 import { formatDateKorean, parseLocalDate, startOfDay } from "./date-utils.js";
@@ -28,14 +28,6 @@ class SafeAITProvider extends React.Component {
 
     return <TDSMobileAITProvider>{this.props.children}</TDSMobileAITProvider>;
   }
-}
-
-function shouldUseAITProvider() {
-  if (typeof window === "undefined") {
-    return false;
-  }
-
-  return typeof window.ReactNativeWebView?.postMessage === "function";
 }
 
 function loadStorage() {
@@ -71,29 +63,28 @@ function getSavedEntries(storage) {
 function FeatureListSection({ activeFeatureId, onSelectFeature }) {
   return (
     <section className="tds-section">
-      <ListHeader
-        title={<ListHeader.TitleParagraph typography="t5" fontWeight="bold">주요 기능</ListHeader.TitleParagraph>}
-        description={<ListHeader.DescriptionParagraph>필요한 계산을 선택하세요.</ListHeader.DescriptionParagraph>}
-        descriptionPosition="bottom"
-      />
-      <List>
+      <div className="section-header">
+        <h2>주요 기능</h2>
+        <p>필요한 계산을 선택하세요.</p>
+      </div>
+      <div className="feature-list" role="list">
         {FEATURES.map((feature) => (
-          <ListRow
+          <button
             key={feature.id}
-            contents={
-              <ListRow.Texts
-                texts={[
-                  { text: feature.label },
-                  { text: feature.description, typography: "t7" },
-                ]}
-              />
-            }
-            right={<span className={feature.id === activeFeatureId ? "feature-state active" : "feature-state"}>{feature.id === activeFeatureId ? "선택됨" : ""}</span>}
-            withArrow
+            type="button"
+            className={feature.id === activeFeatureId ? "feature-item active" : "feature-item"}
             onClick={() => onSelectFeature(feature.id)}
-          />
+          >
+            <span className="feature-copy">
+              <strong>{feature.label}</strong>
+              <span>{feature.description}</span>
+            </span>
+            <span className={feature.id === activeFeatureId ? "feature-state active" : "feature-state"}>
+              {feature.id === activeFeatureId ? "선택됨" : ""}
+            </span>
+          </button>
         ))}
-      </List>
+      </div>
     </section>
   );
 }
@@ -101,11 +92,10 @@ function FeatureListSection({ activeFeatureId, onSelectFeature }) {
 function FeatureFormSection({ activeFeature, storage, onUpdateField, onClear, result }) {
   return (
     <section className="tds-section">
-      <ListHeader
-        title={<ListHeader.TitleParagraph typography="t5" fontWeight="bold">{activeFeature.label}</ListHeader.TitleParagraph>}
-        description={<ListHeader.DescriptionParagraph>{activeFeature.description}</ListHeader.DescriptionParagraph>}
-        descriptionPosition="bottom"
-      />
+      <div className="section-header">
+        <h2>{activeFeature.label}</h2>
+        <p>{activeFeature.description}</p>
+      </div>
 
       <div className="form-stack">
         {activeFeature.fields.map((field) => (
@@ -129,15 +119,11 @@ function FeatureFormSection({ activeFeature, storage, onUpdateField, onClear, re
         <strong className="result-primary">{result.primary}</strong>
         {result.secondary ? <p className="result-secondary">{result.secondary}</p> : null}
         {result.meta.length > 0 ? (
-          <List>
+          <ul className="result-meta">
             {result.meta.map((line) => (
-              <ListRow
-                key={line}
-                verticalPadding="small"
-                contents={<ListRow.Texts texts={[{ text: line, typography: "t7" }]} />}
-              />
+              <li key={line}>{line}</li>
             ))}
-          </List>
+          </ul>
         ) : null}
       </section>
     </section>
@@ -147,24 +133,19 @@ function FeatureFormSection({ activeFeature, storage, onUpdateField, onClear, re
 function SavedEntriesSection({ savedEntries }) {
   return (
     <section className="tds-section">
-      <ListHeader
-        title={<ListHeader.TitleParagraph typography="t5" fontWeight="bold">최근 입력 정보</ListHeader.TitleParagraph>}
-        description={
-          <ListHeader.DescriptionParagraph>
-            로그인 없이 현재 기기에 저장됩니다. 브라우저 데이터를 삭제하면 함께 사라질 수 있습니다.
-          </ListHeader.DescriptionParagraph>
-        }
-        descriptionPosition="bottom"
-      />
+      <div className="section-header">
+        <h2>최근 입력 정보</h2>
+        <p>로그인 없이 현재 기기에 저장됩니다. 브라우저 데이터를 삭제하면 함께 사라질 수 있습니다.</p>
+      </div>
       {savedEntries.length > 0 ? (
-        <List>
+        <ul className="saved-list">
           {savedEntries.map((entry) => (
-            <ListRow
-              key={entry.label}
-              contents={<ListRow.Texts texts={[{ text: entry.label }, { text: formatDateKorean(parseLocalDate(entry.value)), typography: "t7" }]} />}
-            />
+            <li key={entry.label} className="saved-item">
+              <strong>{entry.label}</strong>
+              <span>{formatDateKorean(parseLocalDate(entry.value))}</span>
+            </li>
           ))}
-        </List>
+        </ul>
       ) : (
         <p className="saved-empty">아직 저장된 날짜가 없습니다.</p>
       )}
@@ -233,14 +214,10 @@ export function App() {
   );
 }
 
-const RootWrapper = shouldUseAITProvider() ? SafeAITProvider : React.Fragment;
-
 export function RootApp() {
   return (
-    <React.StrictMode>
-      <RootWrapper>
+    <SafeAITProvider>
         <App />
-      </RootWrapper>
-    </React.StrictMode>
+    </SafeAITProvider>
   );
 }
