@@ -143,6 +143,18 @@ body {
   margin-top: 16px;
 }
 
+.native-action {
+  width: 100%;
+  min-height: 56px;
+  padding: 16px 20px;
+  border: 0;
+  border-radius: 18px;
+  background: #e8f3ff;
+  color: #1b64da;
+  font: inherit;
+  font-weight: 700;
+}
+
 .field-title,
 .result-label,
 .saved-empty {

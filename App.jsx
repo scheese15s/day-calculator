@@ -1,34 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "@toss/tds-mobile";
-import { TDSMobileAITProvider } from "@toss/tds-mobile-ait";
+// import { Button } from "@toss/tds-mobile";
+// import { TDSMobileAITProvider } from "@toss/tds-mobile-ait";
 import { FieldRenderer } from "./FieldRenderer.jsx";
 import { formatDateKorean, parseLocalDate, startOfDay } from "./date-utils.js";
 import { FEATURES } from "./features.js";
 
 const STORAGE_KEY = "family-dday-storage";
-
-class SafeAITProvider extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error) {
-    console.error("TDSMobileAITProvider failed, falling back to plain render.", error);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return this.props.children;
-    }
-
-    return <TDSMobileAITProvider>{this.props.children}</TDSMobileAITProvider>;
-  }
-}
+// class SafeAITProvider extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = { hasError: false };
+//   }
+//
+//   static getDerivedStateFromError() {
+//     return { hasError: true };
+//   }
+//
+//   componentDidCatch(error) {
+//     console.error("TDSMobileAITProvider failed, falling back to plain render.", error);
+//   }
+//
+//   render() {
+//     if (this.state.hasError) {
+//       return this.props.children;
+//     }
+//
+//     return <TDSMobileAITProvider>{this.props.children}</TDSMobileAITProvider>;
+//   }
+// }
 
 function loadStorage() {
   if (typeof window === "undefined") {
@@ -109,9 +108,11 @@ function FeatureFormSection({ activeFeature, storage, onUpdateField, onClear, re
       </div>
 
       <div className="button-row">
-        <Button display="full" size="xlarge" variant="weak" onClick={onClear}>
+        {/* <Button display="full" size="xlarge" variant="weak" onClick={onClear}> */}
+        <button type="button" className="native-action" onClick={onClear}>
           현재 항목 초기화
-        </Button>
+        </button>
+        {/* </Button> */}
       </div>
 
       <section className="result-card" aria-live="polite">
@@ -216,8 +217,10 @@ export function App() {
 
 export function RootApp() {
   return (
-    <SafeAITProvider>
-        <App />
-    </SafeAITProvider>
+    <>
+      {/* <SafeAITProvider> */}
+      <App />
+      {/* </SafeAITProvider> */}
+    </>
   );
 }
